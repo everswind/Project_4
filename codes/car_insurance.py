@@ -5,21 +5,13 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
-from sklearn.linear_model import Lasso
-from sklearn.linear_model import Ridge
-from sklearn.linear_model import ElasticNet
 from sklearn.model_selection import KFold
 from sklearn.model_selection import GridSearchCV
-from sklearn.model_selection import cross_validate
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.tree import export_graphviz
-import pydot
 from sklearn.neural_network import MLPRegressor
 from sklearn.preprocessing import PolynomialFeatures
-from sklearn.neighbors import KNeighborsRegressor
-from Network_backup import cv_rmse_refit_on_whole
-import statsmodels.api as sm
+from codes.Network_backup import cv_rmse_refit_on_whole
 from sklearn.feature_selection import f_regression
 from sklearn.feature_selection import mutual_info_regression
 
@@ -74,7 +66,7 @@ def gridsearch_refit_plot(X, y, reg, param_grid, kf, title):
 #%% write codes in main
 def main():
     # %% load dataset
-    Dataset = pd.read_csv('insurance_data.csv')
+    Dataset = pd.read_csv('dataset/insurance_data.csv')
     X = Dataset.drop(columns=['charges'])
     y = Dataset['charges']
     kf = KFold(10, shuffle=True, random_state=42)

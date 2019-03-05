@@ -12,7 +12,7 @@ import pydot
 from sklearn.neural_network import MLPRegressor
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.neighbors import KNeighborsRegressor
-from car_insurance import gridsearch_refit_plot
+from codes.car_insurance import gridsearch_refit_plot
 
 
 def cv_rmse_refit_on_whole(reg, X, y, kf, title, plot=True):
@@ -63,7 +63,7 @@ def sweep_random_forest(n_list, d_list, m_list):
 # %% codes only run in main
 def main():
     # %% load dataset
-    Dataset = pd.read_csv('network_backup_dataset.csv')
+    Dataset = pd.read_csv('dataset/network_backup_dataset.csv')
     day_agg = Dataset.groupby(['Week #', 'Day of Week'],
                               as_index=False, sort=False)['Size of Backup (GB)'].sum()
 
