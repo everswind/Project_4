@@ -12,9 +12,12 @@ import pydot
 from sklearn.neural_network import MLPRegressor
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.neighbors import KNeighborsRegressor
+from car_insurance import gridsearch_refit_plot
 
 
 def cv_rmse_refit_on_whole(reg, X, y, kf, title, plot=True):
+    """ no parameter tuning, just evaluate with 10fold cv and
+        visualize fitting with whole dataset"""
     scores = cross_validate(reg, X, y, cv=kf, scoring='neg_mean_squared_error',
                             return_train_score=True)
     rmse_df = (-pd.DataFrame({'train RMSE': scores['train_score'],
@@ -58,7 +61,7 @@ def sweep_random_forest(n_list, d_list, m_list):
 
 
 # %% codes only run in main
-if __name__ == '__main__':
+def main():
     # %% load dataset
     Dataset = pd.read_csv('network_backup_dataset.csv')
     day_agg = Dataset.groupby(['Week #', 'Day of Week'],
@@ -75,7 +78,7 @@ if __name__ == '__main__':
     plt.ylabel('Backup size (GB)')
     plt.show()
 
-    kf = KFold(n_splits=10, shuffle=True, random_state=10)
+    kf = KFold(n_splits=10, shuffle=True, random_state=42)
     le = LabelEncoder()
     cat_columns = ['Day of Week', 'Work-Flow-ID', 'File Name']
     y = Dataset['Size of Backup (GB)']
@@ -219,19 +222,10 @@ if __name__ == '__main__':
     for col in cat_columns:
         X[col] = le.fit_transform(X[col])
 
-    rmse_knn = []
-    for k in range(1, 11):
-        reg = KNeighborsRegressor(n_neighbors=k)
-        rmse_knn_k = cv_rmse_refit_on_whole(reg, X, y, kf, title='KNN regression', plot=False)
-        rmse_knn.append(dict(k=k, train_rmse=rmse_knn_k.loc['average', 'train RMSE'],
-                             test_rmse=rmse_knn_k.loc['average', 'test RMSE']))
-    rmse_knn_df = pd.DataFrame(rmse_knn)
-    plt.plot(rmse_knn_df['k'], rmse_knn_df['train_rmse'], label='train rmse')
-    plt.plot(rmse_knn_df['k'], rmse_knn_df['test_rmse'], label='test rmse')
-    plt.xlabel('number of neighbors')
-    plt.legend()
-    plt.show()
-
-    # %% (e1) KNN regression, k=4
     reg = KNeighborsRegressor(n_neighbors=4)
-    rmse_knn_4 = cv_rmse_refit_on_whole(reg, X, y, kf, title='KNN regression, k=4', plot=True)
+    param_grid = {'n_neighbors': np.arange(1, 11)}
+    gridsearch_refit_plot(X, y, reg, param_grid, kf, 'KNN regression')
+
+
+if __name__ == '__main__':
+    main()

@@ -19,8 +19,9 @@ from sklearn.neighbors import KNeighborsRegressor
 from Network_backup import cv_rmse_refit_on_whole
 import statsmodels.api as sm
 
+
 #%% write codes in main
-if __name__ == '__main__':
+def main():
     # %% load dataset
     columns = ['CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE', 'DIS', 'RAD',
                'TAX', 'PTRATIO', 'B', 'LSTAT', 'MEDV']
@@ -113,3 +114,7 @@ if __name__ == '__main__':
                            index=['CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE',
                                     'DIS', 'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT'],
                            columns=['Linear', 'Lasso', 'Ridge', 'ElasticNet'])
+
+
+if __name__ == '__main__':
+    main()
