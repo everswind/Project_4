@@ -1,4 +1,10 @@
 #%% import modules
+""" (1) avoid circular import
+    (2) create __init__.py file to make the dir as a module
+    (3) from codes.file import func
+    (4) if marking codes as 'source code', no need to type codes.xx during
+    import, it appends the codes dir into sys.path
+"""
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt

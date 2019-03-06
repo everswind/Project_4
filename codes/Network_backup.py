@@ -12,7 +12,42 @@ import pydot
 from sklearn.neural_network import MLPRegressor
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.neighbors import KNeighborsRegressor
-from codes.car_insurance import gridsearch_refit_plot
+
+
+def gridsearch_refit_plot(X, y, reg, param_grid, kf, title):
+    """ search one parameter at a time and plot train/test rmse,
+        then refit to plot predicted/obsereved and residual plot"""
+    """ TODO: expand to multi parameter searching"""
+    param_name = list(param_grid.keys())[0]
+    grid = GridSearchCV(reg, param_grid,
+                        scoring='neg_mean_squared_error', cv=kf,
+                        return_train_score=True)
+    grid.fit(X, y)
+    cv_results = pd.DataFrame(grid.cv_results_)
+    plt.plot(np.sqrt(-cv_results['mean_train_score']),
+             label='train rmse')
+    plt.plot(np.sqrt(-cv_results['mean_test_score']),
+             label='test rmse')
+    plt.xticks(np.arange(len(param_grid[param_name])),
+               [str(x) for x in cv_results['param_' + param_name]])
+    plt.legend()
+    plt.xlabel(param_name)
+    plt.title(title)
+    plt.show()
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 5))
+    y_pred = grid.best_estimator_.fit(X, y).predict(X)
+    residuals = y - y_pred
+    ax1.plot(y, y_pred, '.')
+    ax1.set_xlabel('observed y')
+    ax1.set_ylabel('predicted y')
+    ax1.set_title(title + ', predicted vs observed')
+
+    ax2.plot(y_pred, residuals, '.')
+    ax2.set_xlabel('predicted y')
+    ax2.set_ylabel('residuals (y-y_pred')
+    ax2.set_title(title + ', residual plot')
+    plt.show()
 
 
 def cv_rmse_refit_on_whole(reg, X, y, kf, title, plot=True):
@@ -42,7 +77,7 @@ def cv_rmse_refit_on_whole(reg, X, y, kf, title, plot=True):
     return rmse_df
 
 
-def sweep_random_forest(n_list, d_list, m_list):
+def sweep_random_forest(X, y, n_list, d_list, m_list):
     results = []
     for m in m_list:
         for d in d_list:
@@ -123,7 +158,7 @@ def main():
     n_list = [50]
     d_list = np.arange(1, 20, 2)
     m_list = [4]
-    results_df = sweep_random_forest(n_list, d_list, m_list)
+    results_df = sweep_random_forest(X, y, n_list, d_list, m_list)
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 5))
     ax1.plot(results_df['d'], results_df['mean_test_rmse'], label='n={:}, m={:}'.format(*n_list, *m_list))
     ax2.plot(results_df['d'], results_df['oob_error'], label='n={:}, m={:}'.format(*n_list, *m_list))
@@ -229,3 +264,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+#%%
+import os
+os.getcwd()

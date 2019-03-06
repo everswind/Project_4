@@ -1,4 +1,10 @@
 #%% import modules
+""" (1) avoid circular import
+    (2) create __init__.py file to make the dir as a module
+    (3) from codes.file import func
+    (4) if marking codes as 'source code', no need to type codes.xx during
+    import, it appends the codes dir into sys.path
+"""
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,6 +17,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.neural_network import MLPRegressor
 from sklearn.preprocessing import PolynomialFeatures
+from codes.Network_backup import gridsearch_refit_plot
 from codes.Network_backup import cv_rmse_refit_on_whole
 from sklearn.feature_selection import f_regression
 from sklearn.feature_selection import mutual_info_regression
@@ -25,42 +32,6 @@ def cv_rmse_log(reg, X, y, kf):
         logy_pred = reg.predict(X_test)
         MSE.append(np.mean((np.exp(logy_pred) - y_test) ** 2))
     return np.mean(np.sqrt(MSE))
-
-
-def gridsearch_refit_plot(X, y, reg, param_grid, kf, title):
-    """ search one parameter at a time and plot train/test rmse,
-        then refit to plot predicted/obsereved and residual plot"""
-    """ TODO: expand to multi parameter searching"""
-    param_name = list(param_grid.keys())[0]
-    grid = GridSearchCV(reg, param_grid,
-                        scoring='neg_mean_squared_error', cv=kf,
-                        return_train_score=True)
-    grid.fit(X, y)
-    cv_results = pd.DataFrame(grid.cv_results_)
-    plt.plot(np.sqrt(-cv_results['mean_train_score']),
-             label='train rmse')
-    plt.plot(np.sqrt(-cv_results['mean_test_score']),
-             label='test rmse')
-    plt.xticks(np.arange(len(param_grid[param_name])),
-               [str(x) for x in cv_results['param_' + param_name]])
-    plt.legend()
-    plt.xlabel(param_name)
-    plt.title(title)
-    plt.show()
-
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 5))
-    y_pred = grid.best_estimator_.fit(X, y).predict(X)
-    residuals = y - y_pred
-    ax1.plot(y, y_pred, '.')
-    ax1.set_xlabel('observed y')
-    ax1.set_ylabel('predicted y')
-    ax1.set_title(title + ', predicted vs observed')
-
-    ax2.plot(y_pred, residuals, '.')
-    ax2.set_xlabel('predicted y')
-    ax2.set_ylabel('residuals (y-y_pred')
-    ax2.set_title(title + ', residual plot')
-    plt.show()
 
 
 #%% write codes in main
