@@ -6,6 +6,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import KFold
 from sklearn.model_selection import cross_validate
+from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.tree import export_graphviz
 import pydot
