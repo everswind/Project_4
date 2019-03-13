@@ -78,7 +78,7 @@ def cv_rmse_refit_on_whole(reg, X, y, kf, title, plot=True):
     return rmse_df
 
 
-def sweep_random_forest(X, y, n_list, d_list, m_list):
+def sweep_random_forest(X, y, kf, n_list, d_list, m_list):
     results = []
     for m in m_list:
         for d in d_list:
